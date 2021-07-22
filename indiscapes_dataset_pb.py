@@ -38,6 +38,7 @@ def get_indiscapes_dicts(img_dir, doc_dir):
         url = v["filename"]
         filename = url.replace("%20", " ")
         bhoomi = ["Bhoomi_data", "bhoomi"]
+
         if 'pdf_images' in  filename:
             file_name1=img_dir+'/pdf_images'+filename.split('pdf_images')[1]
         elif "Stacked_images" in filename:
@@ -58,8 +59,12 @@ def get_indiscapes_dicts(img_dir, doc_dir):
             file_name1 = img_dir +'/penn-in-hand/'+ filename.split('/')[-1]
         else:
             print(filename)
+            
+        if not os.path.exists(file_name1):
+            continue
         # print(file_name1)
-        height, width = cv2.imread(file_name1).shape[:2]
+        img = cv2.imread(file_name1)
+        height, width = img.shape[:2]
         record["file_name"] = file_name1
         record["height"] = height
         record["width"] = width
