@@ -1,6 +1,5 @@
 import json
 import os
-
 import cv2
 import numpy as np
 from detectron2.data import DatasetCatalog
@@ -8,32 +7,16 @@ from detectron2.data import MetadataCatalog
 from detectron2.structures import BoxMode
 
 images_root = "images"  # This must contain 4 folders each for a dataset
-via_json_root = "doc_v2"  # This must contain 3 folders named train, test, val; each with a via_region_data.json
+via_json_root = "doc_pb"  # This must contain 3 folders named train, test, val; each with a via_region_data.json
 
 
 categories_dict = {
-    "Hole(Virtual)": 0,
-    "Hole(Physical)": 1,
-    "Character Line Segment": 2,
-    "Boundary Line": 3,
-    "Physical Degradation": 4,
-    "Page Boundary": 5,
-    "Character Component": 6,
-    "Library Marker": 7,
-    "Picture / Decorator": 8,
+    "Page Boundary": 0,
     # In case you are using it on Dataset-v1, please split Pic/Deco into 2 individual classes
 }
 
 categories_list = [
-    "Hole(Virtual)",
-    "Hole(Physical)",
-    "Character Line Segment",
-    "Boundary Line",
-    "Physical Degradation",
     "Page Boundary",
-    "Character Component",
-    "Library Marker",
-    "Picture / Decorator",
 ]
 
 
@@ -54,22 +37,28 @@ def get_indiscapes_dicts(img_dir, doc_dir):
         record = {}
         url = v["filename"]
         filename = url.replace("%20", " ")
-
         bhoomi = ["Bhoomi_data", "bhoomi"]
-        if any(x in filename for x in bhoomi):
-            if "images" in filename:
-                f = filename.split("images")[1]
-                file_name1 = img_dir + "/Bhoomi_data/images/images" + f
-            else:
-                f = filename.split("bhoomi")[1]
-                file_name1 = img_dir + "/Bhoomi_data/images/images" + f
-        collections = ["penn_in_hand", "penn-in-hand", "jain-mscripts", "ASR_Images"]
-        if any(x in filename for x in collections):
-            if "penn_in_hand" in filename:
-                file_name1 = img_dir + filename.split("9006")[1]
-            else:
-                file_name1 = img_dir + filename.split("imgdata")[1]
-
+        if 'pdf_images' in  filename:
+            file_name1=img_dir+'/pdf_images'+filename.split('pdf_images')[1]
+        elif "Stacked_images" in filename:
+            file_name1 = filename.split("../")[1]+'.jpg'
+            # print(filename)
+            continue
+        elif "google_scraped" in filename:
+            file_name1=img_dir+"/google_scraped"+filename.split('images')[1]
+        elif "ASR_Images" in filename:
+            file_name1=img_dir+'/ASR_Images/'+filename.split('/')[-1]
+        elif "Jain_manuscripts" in filename:
+            file_name1 = img_dir +'/Jain_manuscripts/'+filename.split("images/")[1]
+        elif "bhoomi" in filename:
+            file_name1 = img_dir + "/Bhoomi_data/" + filename.split('/')[-1]
+        elif "penn_in_hand" in filename:
+            file_name1 = img_dir + '/penn_in_hand/'+filename.split('/')[-1]
+        elif "penn-in-hand" in filename:
+            file_name1 = img_dir +'/penn-in-hand/'+ filename.split('/')[-1]
+        else:
+            print(filename)
+        # print(file_name1)
         height, width = cv2.imread(file_name1).shape[:2]
         record["file_name"] = file_name1
         record["height"] = height
@@ -107,19 +96,17 @@ def get_indiscapes_dicts(img_dir, doc_dir):
             poly = [p for x in poly for p in x]
 
             region = anno["region_attributes"]["Spatial Annotation"]
+
             if type(region) is list:
                 region = region[0]
-            if region == "Decorator":
-                region = "Picture / Decorator"
-            if region == "Picture":
-                region = "Picture / Decorator"
-            obj = {
-                "bbox": [np.min(px), np.min(py), np.max(px), np.max(py)],
-                "bbox_mode": BoxMode.XYXY_ABS,
-                "segmentation": [poly],
-                "category_id": categories_dict[region],
-            }
-            objs.append(obj)
+            if region == "Page Boundary":
+                obj = {
+                    "bbox": [np.min(px), np.min(py), np.max(px), np.max(py)],
+                    "bbox_mode": BoxMode.XYXY_ABS,
+                    "segmentation": [poly],
+                    "category_id": categories_dict[region],
+                }
+                objs.append(obj)
 
         record["annotations"] = objs
         if len(objs):
@@ -136,7 +123,7 @@ def register_dataset(combined_train_val=False):
     :return: None
     """
     DatasetCatalog.clear()
-    for d in ["train_val_combined", "val", "test"] if combined_train_val else ["train", "val", "test"]:
+    for d in ["train", "val", "test"] if combined_train_val else ["train", "val", "test"]:
         DatasetCatalog.register(
             "indiscapes_" + d,
             lambda d=d: get_indiscapes_dicts(images_root, os.path.join(via_json_root, d)),

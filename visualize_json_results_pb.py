@@ -6,7 +6,7 @@ import argparse
 import json
 import os
 from collections import defaultdict
-
+from PIL import Image
 import cv2
 import numpy as np
 import torch
@@ -28,7 +28,7 @@ from detectron2.utils.visualizer import (
 )
 from fvcore.common.file_io import PathManager
 
-from indiscapes_dataset import register_dataset
+from indiscapes_dataset_pb import register_dataset
 
 register_dataset(combined_train_val=False)
 
@@ -72,7 +72,8 @@ class CustomVisualizer(Visualizer):
         boxes = None
         scores = None
         classes = predictions.pred_classes if predictions.has("pred_classes") else None
-        labels = _create_text_labels(classes, scores, ["Hv", "Hp", "CLS", "BL", "PD", "PB", "CC", "LM", "D/P"])
+        # labels = _create_text_labels(classes, scores, ["Hv", "Hp", "CLS", "BL", "PD", "PB", "CC", "LM", "D/P"])
+        labels = _create_text_labels(classes, scores, ["PB"])
         keypoints = predictions.pred_keypoints if predictions.has("pred_keypoints") else None
 
         if predictions.has("pred_masks"):
@@ -139,8 +140,8 @@ class CustomVisualizer(Visualizer):
             labels = _create_text_labels(
                 category_ids,
                 scores=None,
-                class_names=["Hv", "Hp", "CLS", "BL", "PD", "PB", "CC", "LM", "D/P"],
-                is_crowd=[x.get("iscrowd", 0) for x in annos],
+                class_names=["PB"],
+                # is_crowd=[x.get("iscrowd", 0) for x in annos],
             )
             boxes = None
             alpha = 0
@@ -376,13 +377,11 @@ if __name__ == "__main__":
         vis_preds = list()
         for pred_by_image in pred_by_input:
             predictions = create_instances(pred_by_image[dic["image_id"]], img.shape[:2])
-            # vis = CustomVisualizer(img, metadata)
-            vis=Visualizer(img, metadata)
+            vis = CustomVisualizer(img, metadata)
             vis_pred = vis.draw_instance_predictions(predictions).get_image()
             vis_preds.append(vis_pred)
 
-        # vis = CustomVisualizer(img, metadata)
-        vis=Visualizer(img, metadata)
+        vis = CustomVisualizer(img, metadata)
         vis_gt = vis.draw_dataset_dict(dic).get_image()
 
         stitched_image = np.vstack((vis_gt, np.vstack(vis_preds)))

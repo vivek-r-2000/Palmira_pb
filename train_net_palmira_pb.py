@@ -26,9 +26,10 @@ from detectron2.evaluation import PascalVOCDetectionEvaluator
 from detectron2.evaluation import SemSegEvaluator
 from detectron2.evaluation import verify_results
 from detectron2.modeling import GeneralizedRCNNWithTTA
-
+from detectron2.data import build_detection_test_loader 
+from detectron2.data import DatasetMapper
 from defgrid.config import add_defgrid_maskhead_config
-# from hd.evaluator_perregion import HDEvaluator
+from hd.evaluator_perregion import HDEvaluator
 from hd.evaluator import HDEvaluator
 from indiscapes_dataset_pb import register_dataset
 

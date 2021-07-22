@@ -12,6 +12,6 @@ MODEL:
 INPUT:
   MIN_SIZE_TRAIN: (800,)
 DATASETS:
-  TRAIN: ("indiscapes_train_val_combined",)
-  TEST: ("indiscapes_test",)
+  TRAIN: ("indiscapes_train",)
+  TEST: ("indiscapes_val",)
 OUTPUT_DIR: "outputs/Palmira"

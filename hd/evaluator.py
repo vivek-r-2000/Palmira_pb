@@ -12,7 +12,7 @@ from detectron2.evaluation import DatasetEvaluator
 from medpy.metric import hd, hd95, assd
 from scipy.interpolate import splprep, splev
 
-from indiscapes_dataset import categories_list
+from indiscapes_dataset_pb import categories_list
 
 
 def _proc_annotations(annotations):
@@ -55,7 +55,7 @@ def downsample_points(output):
     segm_per_region = {i: [] for i in range(len(categories_list))}
 
     for i in range(len(output['instances'])):
-        _,contours, hierarchy= cv2.findContours(
+        contours, hierarchy= cv2.findContours(
             predmasks[i], cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
         )
         if len(contours) == 0:
