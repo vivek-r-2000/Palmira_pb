@@ -159,3 +159,5 @@ outputs/*
 ground_truth/*
 Palmira_pb/*
 *.pth
+indiscapes_dataset.py
+generate_mask.py
