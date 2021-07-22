@@ -162,3 +162,5 @@ Palmira_pb/*
 
 *.jpg
 
+detectron2/*
+
