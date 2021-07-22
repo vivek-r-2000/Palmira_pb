@@ -160,3 +160,5 @@ ground_truth/*
 Palmira_pb/*
 *.pth
 
+*.jpg
+
