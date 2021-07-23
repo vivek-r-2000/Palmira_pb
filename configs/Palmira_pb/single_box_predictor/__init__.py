@@ -1,0 +1,1 @@
+from .single_box_predictor import StandardROIHeadsWithoutClassifier

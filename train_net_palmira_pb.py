@@ -33,6 +33,8 @@ from hd.evaluator_perregion import HDEvaluator
 from hd.evaluator import HDEvaluator
 from indiscapes_dataset_pb import register_dataset
 
+import configs.Palmira_pb.single_box_predictor 
+
 # from validation_hooks import EvalHook
 
 register_dataset(combined_train_val=True)
