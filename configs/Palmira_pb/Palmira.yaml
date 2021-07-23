@@ -16,6 +16,7 @@ MODEL:
     W_AREA: 0.05
     W_LAPLACIAN: 0.05
   ROI_HEADS:
+    NAME: "StandardROIHeadsWithoutClassifier"
     NUM_CLASSES: 1
 SOLVER:
   IMS_PER_BATCH: 4
