@@ -106,7 +106,6 @@ if __name__ == "__main__":
                     assert len(args.input) == 1, "Please specify a directory with args.output"
                     out_filename = args.output
                 visualized_output.save(out_filename)
-                print((predictions["instances"]._fields["pred_boxes"]))
                 boxes = predictions["instances"]._fields["pred_boxes"].tensor.tolist()
                 scores = predictions["instances"]._fields["scores"].tolist()
                 pred_classes = predictions["instances"]._fields["pred_classes"].tolist()
